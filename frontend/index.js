@@ -9,7 +9,8 @@ import {
     Box,
     FormField,
 } from '@airtable/blocks/ui';
-import React from 'react';
+import React, { useState } from 'react';
+import DatePicker from "react-datepicker";
 
 // This app uses chart.js and the react-chartjs-2 packages.
 // Install them by running this in the terminal:
@@ -23,56 +24,39 @@ const GlobalConfigKeys = {
 };
 
 function SimpleChartApp() {
-    const base = useBase();
-    const globalConfig = useGlobalConfig();
+   const [value1, setValue1] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+   const [value2, setValue2] = useState(new Date());
 
-    const tableId = globalConfig.get(GlobalConfigKeys.TABLE_ID);
-    const table = base.getTableByIdIfExists(tableId);
 
-    const viewId = globalConfig.get(GlobalConfigKeys.VIEW_ID);
-    const view = table ? table.getViewByIdIfExists(viewId) : null;
+   function handleChange1(event) {
+      let value1 = event;
+      setValue1(value1);
+      change1(value1);
+   } 
 
-    const xFieldId = globalConfig.get(GlobalConfigKeys.X_FIELD_ID);
-    const xField = table ? table.getFieldByIdIfExists(xFieldId) : null;
-
-    const records = useRecords(view);
-
-    const data = records && xField ? getChartData({records, xField}) : null;
+   function handleChange2(event) {
+      let value2 = event;
+      setValue2(value2);
+      change2(value2);
+   }
 
     return (
-        <Box
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            display="flex"
-            flexDirection="column"
-        >
-            <Settings table={table} />
-            {data && (
-                <Box position="relative" flex="auto" padding={3}>
-                    <Bar
-                        data={data}
-                        options={{
-                            maintainAspectRatio: false,
-                            scales: {
-                                yAxes: [
-                                    {
-                                        ticks: {
-                                            beginAtZero: true,
-                                        },
-                                    },
-                                ],
-                            },
-                            legend: {
-                                display: false,
-                            },
-                        }}
-                    />
-                </Box>
-            )}
-        </Box>
+        <div className="outer form-check form-check-inline">
+            <DatePicker
+                selected={value1}
+                onChange={handleChange1}
+                timeInputLabel="Time:"
+                dateFormat="MM/dd/yyyy h:mm aa"
+                showTimeInput
+            />
+            <DatePicker
+                selected={value2}
+                onChange={handleChange2}
+                timeInputLabel="Time:"
+                dateFormat="MM/dd/yyyy h:mm aa"
+                showTimeInput
+            />
+        </div>
     );
 }
 
